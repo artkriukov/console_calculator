@@ -3,40 +3,46 @@ print("Добро пожаловать в  калькулятор!")
 var history: [String] = []
 
 while true {
-    let operation = getDataFromUser(description: "Выберите операцию: +, -, * или /. Для завершения работы нажмите q. Для просмотра истории нажмите h." )
+    let action = getDataFromUser(description: "Что вы хотите сделать: с - расчет примера. q - завершение работы. h - просмотр истории" )
     
-    if operation == "q"{
-        exit(0)
-    } else if operation == "h"{
-        for example in history {
-            print(example)
-        }
+    switch action {
+    case "c": calculate()
+    case "q": exit(0)
+    case "h": showHistory()
+    default: print("Недопустимое значение")
     }
-    
-    let firstNum = getDataFromUser(description: "Введите первое число")
-    let secondNum = getDataFromUser(description: "Введите второе число")
-    
-    let example = firstNum + " " + operation + " " + secondNum
-
-    print("Программа делает вычисление примера: " + example)
-
-    if let firstNumber = Int(firstNum) {
-        if let secondNumber = Int(secondNum) {
-            let result = colculate(operation: operation, firstNumber: firstNumber, secondNumber: secondNumber)
-            if let result = result {
-                showResult(result)
-                history.append(example + " = " + String(result))
-            }
-        }else {
-            print("Вы ввели неверное число")
-        }
-    }else{
-        print("Вы ввели неверное число")
-    }
-    
     print("")
     print("------------------------")
     print("")
+}
+
+
+func calculate() {
+    let operation = getDataFromUser(description: "Выберите операцию: +, -, * или /.")
+    guard operation == "+" || operation == "-" || operation == "*" || operation == "/" else{
+        print("Вы ввели неверное значение")
+        return
+    }
+    
+    let firstNum = getDataFromUser(description: "Введите первое число")
+    guard let firstNum = Int(firstNum) else {
+        print("Вы ввели неверное число")
+        return
+    }
+    
+    let secondNum = getDataFromUser(description: "Введите второе число")
+    guard let secondNum = Int(secondNum) else {
+        print("Вы ввели неверное второе число")
+        return
+    }
+    
+    let example = String(firstNum) + " " + operation + " " + String(secondNum)
+    print("Программа делает вычисление примера: " + example)
+    
+    let result = calculate(operation: operation, firstNumber: firstNum, secondNumber: secondNum)
+    guard let result = result else { return }
+    showResult(result)
+    history.append(example + " = " + String(result))
 }
 
 func getDataFromUser(description: String) -> String{
@@ -48,20 +54,26 @@ func showResult(_ result: Int){
     print("Результат: " + String(result))
 }
 
-func colculate(operation: String, firstNumber: Int, secondNumber: Int ) -> Int? {
+func calculate(operation: String, firstNumber: Int, secondNumber: Int ) -> Int? {
     switch operation{
-    case "+" : return firstNumber + secondNumber
-    case "-" : return firstNumber - secondNumber
-    case "*" : return firstNumber * secondNumber
+    case "+" : 
+        return firstNumber + secondNumber
+    case "-" :
+        return firstNumber - secondNumber
+    case "*" :
+        return firstNumber * secondNumber
+    case "/" where secondNumber == 0:
+        print("Деление на 0 запрещенно")
+        return nil
     case "/" :
-        if secondNumber != 0 {
-            return firstNumber / secondNumber
-        }else{
-            print("Деление на 0 запрещенно")
-            return nil
-        }
+        return firstNumber / secondNumber
     default: print("Вы ввели неверную операцию")
         return nil
     }
 }
 
+func showHistory(){
+    for example in history {
+        print(example)
+    }
+}
